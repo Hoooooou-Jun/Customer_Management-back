@@ -12,18 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const config_1 = __importDefault(require("config"));
-const connect_1 = __importDefault(require("./utils/connect"));
-const logger_1 = __importDefault(require("./utils/logger"));
-const router_1 = __importDefault(require("./router/router"));
-const app = (0, express_1.default)();
-const PORT = config_1.default.get('port');
-app.get('/', (req, res, next) => {
-    res.send('Hello');
+const connect = () => __awaiter(void 0, void 0, void 0, function* () {
+    const DBURI = config_1.default.get("dbUri");
+    try {
+        yield mongoose_1.default.connect(DBURI);
+        console.log("DB connected");
+    }
+    catch (error) {
+        console.error("Could not connect to db");
+        process.exit(1);
+    }
 });
-app.use("/router", router_1.default);
-app.listen(PORT, () => __awaiter(void 0, void 0, void 0, function* () {
-    logger_1.default.info(`App is running at http://localhost:${PORT}`);
-    yield (0, connect_1.default)();
-}));
+exports.default = connect;

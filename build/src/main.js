@@ -16,14 +16,14 @@ const express_1 = __importDefault(require("express"));
 const config_1 = __importDefault(require("config"));
 const connect_1 = __importDefault(require("./utils/connect"));
 const logger_1 = __importDefault(require("./utils/logger"));
-const router_1 = __importDefault(require("./router/router"));
+const routes_1 = __importDefault(require("./routes"));
 const app = (0, express_1.default)();
 const PORT = config_1.default.get('port');
 app.get('/', (req, res, next) => {
     res.send('Hello');
 });
-app.use("/router", router_1.default);
 app.listen(PORT, () => __awaiter(void 0, void 0, void 0, function* () {
     logger_1.default.info(`App is running at http://localhost:${PORT}`);
     yield (0, connect_1.default)();
+    (0, routes_1.default)(app);
 }));
