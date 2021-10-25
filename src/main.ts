@@ -1,9 +1,9 @@
 import express from 'express';
-import config from '../config/default';
+import config from 'config';
 import bodyParser from 'body-parser';
 import connect from './utils/connect';
 import logger from './utils/logger'
-import helloRoutes from './routes/hello';
+import userRoutes from './routes/user';
 
 const app = express();
 
@@ -13,9 +13,9 @@ app.get('/', (req:express.Request, res:express.Response, next: express.NextFunct
     res.send('Hello');
 });
 
-app.use('/main', helloRoutes)
+app.use('/users', userRoutes)
 
-app.listen(config.server.port, async () => {
-    logger.info(`App is running at http://localhost:${config.server.port}`);
+app.listen(config.get<number>('server.PORT'), async () => {
+    logger.info(`App is running at http://localhost:${config.get<number>('server.PORT')}`);
     await connect();
 });
