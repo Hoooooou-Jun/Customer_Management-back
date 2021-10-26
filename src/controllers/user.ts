@@ -60,8 +60,7 @@ const login = (req: Request, res: Response, next: NextFunction) => {
             });
         }
         bcryptjs.compare(password, users[0].password, (error, result) => {
-            if (error) {
-                logger.error(error.message)
+            if (result == false) {
                 return res.status(401).json({
                     message:'Incorrect password'
                 });  
