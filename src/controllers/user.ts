@@ -16,48 +16,60 @@ const validateToken = (req: Request, res: Response, next: NextFunction) => {
 const register = (req: Request, res: Response, next: NextFunction) => {
     console.log(req.body)
     let { id, password } = req.body
-    //if ( id === "" && password === "" && username === "" &&& phone )
-
-    User.find({ id }).exec().then((users) => {
-        if (users.length) { 
-            return res.status(405).json({
-                message: 'Exist username'
-            })
-        }
-        else {
-            bcryptjs.hash(password, 10, (hashError, hash) => {
-                if (hashError) {
-                    return res.status(500).json({
-                        message: hashError.message,
-                        error: hashError
-                    });
-                }
-                else {
-                    const _user = new User({
-                        _id: new mongoose.Types.ObjectId(),
-                        id,
-                        password: hash,
-                        username: "정보 없음",
-                        phone: "정보 없음",
-                        region: "정보 없음",
-                    });
-                    return _user.save().then((user) => {
-                        return res.status(200).json({
-                            user
+    if ( id === "" ) {
+        return res.status(405).json({
+            message: 'Empty id'
+        });
+    }
+    else {
+        User.find({ id }).exec().then((users) => {
+            if (users.length) { 
+                return res.status(405).json({
+                    message: 'Exist username'
+                });
+            }
+            else if ( password.length < 8 || password.lenght > 20) {
+                return res.status(405).json({
+                    message: 'Password must be 8-20 digits'
+                });
+            }
+            else if ( password.search(/\s/) != -1 ) {
+                return res.status(405).json({
+                    message: 'Password must not contain spaces'
+                });
+            }
+            else if ( password.search(/[0-9]/g) < 0 || password.search(/[a-z]/ig) < 0 || password.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi) < 0 ) {
+                return res.status(405).json({
+                    message: 'Password must be a combination of english, number, special characher'
+                });
+            }
+            else {
+                bcryptjs.hash(password, 10, (hashError, hash) => {
+                    if (hashError) {
+                        return res.status(500).json({
+                            message: hashError.message,
+                            error: hashError
                         });
-                    })
-                }
-                // .catch((error) => {
-                //     return res.status(500).json({
-                //         message: error.message,
-                //         error
-                //     });
-                // });
-            });
-        }
-    })
-
-
+                    }
+                    else {
+                        const _user = new User({
+                            _id: new mongoose.Types.ObjectId(),
+                            id,
+                            password: hash,
+                            username: "정보 없음",
+                            phone: "정보 없음",
+                            region: "정보 없음",
+                        });
+                        return _user.save().then((user) => {
+                            return res.status(200).json({
+                                user
+                            });
+                        });
+                    }
+                });
+            }
+        });
+    }
 };
 
 const login = (req: Request, res: Response, next: NextFunction) => {
@@ -127,7 +139,10 @@ const editUserInfo = (req: Request, res: Response, next: NextFunction) => {
             response
         })
     }).catch((error) => {
-        console.log(error)
+        return res.status(500).json({
+            message: error.message,
+            error
+        });
     })
 }
 
