@@ -9,6 +9,5 @@ router.post("/register", controller.register);
 router.post("/login", controller.login);
 router.get("/userinfo", controller.getAllUsers);
 router.post("/userinfo", controller.editUserInfo);
-router.get("/get/all", controller.getAllUsers);
  
 export default router;
